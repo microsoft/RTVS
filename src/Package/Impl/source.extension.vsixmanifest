@@ -2,47 +2,47 @@
 <PackageManifest Version="2.0.0"
                  xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011"
                  xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
-  <Metadata>
-    <Identity Id="Microsoft.RTVS.2019" Version="1.5" Language="en-US" Publisher="Mikhail Arkhipov (Microsoft)" />
-    <DisplayName>R Tools for Visual Studio 2019</DisplayName>
-    <Description xml:space="preserve">R Tools for Visual Studio 2019 (port from RTVS 2017 by Mikhail Arkhipov)</Description>
-    <Preview>true</Preview>
-  </Metadata>
-  <Installation AllUsers="true">
-    <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[16.0, 17.0)" />
-    <InstallationTarget Id="Microsoft.VisualStudio.Pro" Version="[16.0, 17.0)" />
-    <InstallationTarget Id="Microsoft.VisualStudio.Enterprise" Version="[16.0, 17.0)" />
-  </Installation>
-  <Prerequisites>
-    <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[16.0, 17.0)" DisplayName="Visual Studio core editor" />
-    <Prerequisite Id="Microsoft.Component.MSBuild" Version="[16.0, 17.0)" DisplayName="MSBuild" />
-  </Prerequisites>
-  <Dependencies>
-    <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.7.2,)" />
-  </Dependencies>
-  <Assets>
-    <Asset Type="Microsoft.VisualStudio.MefComponent" Path="Microsoft.R.Debugger.dll" />
-    <Asset Type="Microsoft.VisualStudio.MefComponent" Path="Microsoft.R.Host.Client.Windows.dll" />
-    <Asset Type="Microsoft.VisualStudio.MefComponent" Path="Microsoft.R.Components.Windows.dll" />
-    <Asset Type="Microsoft.VisualStudio.MefComponent" Path="Microsoft.Languages.Editor.Windows.dll" />
-    <Asset Type="Microsoft.VisualStudio.MefComponent" Path="Microsoft.R.Editor.Windows.dll" />
-    <Asset Type="Microsoft.VisualStudio.MefComponent" Path="Microsoft.Markdown.Editor.Windows.dll" />
-    <Asset Type="Microsoft.VisualStudio.MefComponent" Path="Microsoft.VisualStudio.R.Package.dll" />
-    <Asset Type="Microsoft.VisualStudio.MefComponent" Path="Microsoft.VisualStudio.R.Sql.dll" />
-    <Asset Type="Microsoft.VisualStudio.VsPackage" Path="Microsoft.VisualStudio.R.Package.dll" />
-    <Asset Type="Microsoft.VisualStudio.ProjectTemplate" Path="ProjectTemplates\EmptyProject" />
-    <Asset Type="Microsoft.VisualStudio.ItemTemplate" Path="ItemTemplates\DatasetRD" />
-    <Asset Type="Microsoft.VisualStudio.ItemTemplate" Path="ItemTemplates\EmptyRD" />
-    <Asset Type="Microsoft.VisualStudio.ItemTemplate" Path="ItemTemplates\EmptyRMD" />
-    <Asset Type="Microsoft.VisualStudio.ItemTemplate" Path="ItemTemplates\FunctionRD" />
-    <Asset Type="Microsoft.VisualStudio.ItemTemplate" Path="ItemTemplates\RScript" />
-    <Asset Type="Microsoft.VisualStudio.ItemTemplate" Path="ItemTemplates\RSettings" />
-    <Asset Type="Microsoft.VisualStudio.ItemTemplate" Path="ItemTemplates\SqlQuery" />
-    <Asset Type="Microsoft.VisualStudio.ItemTemplate" Path="ItemTemplates\SqlSProc" />
-    <Asset Type="Microsoft.VisualStudio.ItemTemplate" Path="ItemTemplates\WebHtmlPage" />
-    <Asset Type="Microsoft.VisualStudio.ItemTemplate" Path="ItemTemplates\WebStyleSheet" />
-    <Asset Type="Microsoft.VisualStudio.ItemTemplate" Path="ItemTemplates\XMLFile" />
-    <Asset Type="Microsoft.VisualStudio.ItemTemplate" Path="ItemTemplates\XMLSchema" />
-    <Asset Type="Microsoft.VisualStudio.ItemTemplate" Path="ItemTemplates\XSLTFile" />
-  </Assets>
+    <Metadata>
+        <Identity Id="Microsoft.RTVS.2019" Version="1.6" Language="en-US" Publisher="Mikhail Arkhipov (Microsoft)" />
+        <DisplayName>R Tools for Visual Studio 2019</DisplayName>
+        <Description xml:space="preserve">R Tools for Visual Studio 2019 (by Mikhail Arkhipov)</Description>
+        <Preview>true</Preview>
+    </Metadata>
+    <Installation AllUsers="true">
+        <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[16.0, 17.0)" />
+        <InstallationTarget Id="Microsoft.VisualStudio.Pro" Version="[16.0, 17.0)" />
+        <InstallationTarget Id="Microsoft.VisualStudio.Enterprise" Version="[16.0, 17.0)" />
+    </Installation>
+    <Prerequisites>
+        <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[16.0, 17.0)" DisplayName="Visual Studio core editor" />
+        <Prerequisite Id="Microsoft.Component.MSBuild" Version="[16.0, 17.0)" DisplayName="MSBuild" />
+    </Prerequisites>
+    <Dependencies>
+        <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.7.2,)" />
+    </Dependencies>
+    <Assets>
+        <Asset Type="Microsoft.VisualStudio.MefComponent" Path="Microsoft.R.Debugger.dll" />
+        <Asset Type="Microsoft.VisualStudio.MefComponent" Path="Microsoft.R.Host.Client.Windows.dll" />
+        <Asset Type="Microsoft.VisualStudio.MefComponent" Path="Microsoft.R.Components.Windows.dll" />
+        <Asset Type="Microsoft.VisualStudio.MefComponent" Path="Microsoft.Languages.Editor.Windows.dll" />
+        <Asset Type="Microsoft.VisualStudio.MefComponent" Path="Microsoft.R.Editor.Windows.dll" />
+        <Asset Type="Microsoft.VisualStudio.MefComponent" Path="Microsoft.Markdown.Editor.Windows.dll" />
+        <Asset Type="Microsoft.VisualStudio.MefComponent" Path="Microsoft.VisualStudio.R.Package.dll" />
+        <Asset Type="Microsoft.VisualStudio.MefComponent" Path="Microsoft.VisualStudio.R.Sql.dll" />
+        <Asset Type="Microsoft.VisualStudio.VsPackage" Path="Microsoft.VisualStudio.R.Package.dll" />
+        <Asset Type="Microsoft.VisualStudio.ProjectTemplate" Path="ProjectTemplates\EmptyProject" />
+        <Asset Type="Microsoft.VisualStudio.ItemTemplate" Path="ItemTemplates\DatasetRD" />
+        <Asset Type="Microsoft.VisualStudio.ItemTemplate" Path="ItemTemplates\EmptyRD" />
+        <Asset Type="Microsoft.VisualStudio.ItemTemplate" Path="ItemTemplates\EmptyRMD" />
+        <Asset Type="Microsoft.VisualStudio.ItemTemplate" Path="ItemTemplates\FunctionRD" />
+        <Asset Type="Microsoft.VisualStudio.ItemTemplate" Path="ItemTemplates\RScript" />
+        <Asset Type="Microsoft.VisualStudio.ItemTemplate" Path="ItemTemplates\RSettings" />
+        <Asset Type="Microsoft.VisualStudio.ItemTemplate" Path="ItemTemplates\SqlQuery" />
+        <Asset Type="Microsoft.VisualStudio.ItemTemplate" Path="ItemTemplates\SqlSProc" />
+        <Asset Type="Microsoft.VisualStudio.ItemTemplate" Path="ItemTemplates\WebHtmlPage" />
+        <Asset Type="Microsoft.VisualStudio.ItemTemplate" Path="ItemTemplates\WebStyleSheet" />
+        <Asset Type="Microsoft.VisualStudio.ItemTemplate" Path="ItemTemplates\XMLFile" />
+        <Asset Type="Microsoft.VisualStudio.ItemTemplate" Path="ItemTemplates\XMLSchema" />
+        <Asset Type="Microsoft.VisualStudio.ItemTemplate" Path="ItemTemplates\XSLTFile" />
+    </Assets>
 </PackageManifest>

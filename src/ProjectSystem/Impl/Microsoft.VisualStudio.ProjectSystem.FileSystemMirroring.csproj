@@ -23,12 +23,12 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Build" Version="16.3.0" />
+    <PackageReference Include="Microsoft.Build" Version="16.5.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.3.1" />
     <PackageReference Include="Microsoft.VisualStudio.ProjectSystem" Version="16.2.133-pre" />
-    <PackageReference Include="Microsoft.VisualStudio.SDK.EmbedInteropTypes" Version="15.0.27" />
-    <PackageReference Include="Microsoft.VisualStudio.Shell.15.0" Version="16.3.29318.209" />
-    <PackageReference Include="Microsoft.VisualStudio.Shell.Framework" Version="16.3.29318.209" />
+    <PackageReference Include="Microsoft.VisualStudio.SDK.EmbedInteropTypes" Version="15.0.30" />
+    <PackageReference Include="Microsoft.VisualStudio.Shell.15.0" Version="16.5.29911.84" />
+    <PackageReference Include="Microsoft.VisualStudio.Shell.Framework" Version="16.5.29911.84" />
     <PackageReference Include="Microsoft.VisualStudio.Shell.Interop.11.0" Version="11.0.61031" />
     <PackageReference Include="System.Collections.Immutable" Version="1.5.0" />
   </ItemGroup>

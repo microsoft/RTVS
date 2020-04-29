@@ -27,15 +27,15 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.VisualStudio.CoreUtility" Version="16.2.45" />
-    <PackageReference Include="Microsoft.VisualStudio.Editor" Version="16.2.45" />
-    <PackageReference Include="Microsoft.VisualStudio.ImageCatalog" Version="16.3.29316.127" />
+    <PackageReference Include="Microsoft.VisualStudio.CoreUtility" Version="16.4.280" />
+    <PackageReference Include="Microsoft.VisualStudio.Editor" Version="16.4.280" />
+    <PackageReference Include="Microsoft.VisualStudio.ImageCatalog" Version="16.5.29903.111" />
     <PackageReference Include="Microsoft.VisualStudio.Imaging.Interop.14.0.DesignTime" Version="15.0.25726-Preview5" />
-    <PackageReference Include="Microsoft.VisualStudio.Language.Intellisense" Version="16.2.45" />
-    <PackageReference Include="Microsoft.VisualStudio.Text.Data" Version="16.2.45" />
-    <PackageReference Include="Microsoft.VisualStudio.Text.Logic" Version="16.2.45" />
-    <PackageReference Include="Microsoft.VisualStudio.Text.UI" Version="16.2.45" />
-    <PackageReference Include="Microsoft.VisualStudio.Text.UI.Wpf" Version="16.2.45" />
+    <PackageReference Include="Microsoft.VisualStudio.Language.Intellisense" Version="16.4.280" />
+    <PackageReference Include="Microsoft.VisualStudio.Text.Data" Version="16.4.280" />
+    <PackageReference Include="Microsoft.VisualStudio.Text.Logic" Version="16.4.280" />
+    <PackageReference Include="Microsoft.VisualStudio.Text.UI" Version="16.4.280" />
+    <PackageReference Include="Microsoft.VisualStudio.Text.UI.Wpf" Version="16.4.280" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(SourceDirectory)Common\Core\Impl\Microsoft.R.Common.Core.csproj" />
