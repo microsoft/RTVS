@@ -23,7 +23,6 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         private const int MaxDirectoryEntries = 8;
         private readonly IServiceContainer _services;
         private readonly ISettingsStorage _settingStorage;
-        private readonly ILoggingPermissions _loggingPermissions;
 
         private string _cranMirror;
         private string _workingDirectory;
@@ -56,7 +55,6 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         public RSettingsImplementation(IServiceContainer services) {
             _services = services;
             _settingStorage = services.GetService<ISettingsStorage>();
-            _loggingPermissions = services.GetService<ILoggingPermissions>();
             _workingDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
         }
 
@@ -227,8 +225,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         public void LoadSettings() {
             _settingStorage.LoadPropertyValues(this);
             // Correct setting if stored value exceed currently set maximum
-            LogVerbosity = MathExtensions.Min(LogVerbosity, _loggingPermissions.MaxVerbosity);
-            _loggingPermissions.CurrentVerbosity = LogVerbosity;
+            LogVerbosity = LogVerbosity.Normal;
         }
 
         public Task SaveSettingsAsync() {

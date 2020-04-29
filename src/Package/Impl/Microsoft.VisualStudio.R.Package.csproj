@@ -216,7 +216,6 @@
     </Compile>
     <Compile Include="Options\R\Editor\REditorSettingsStorageProvider.cs" />
     <Compile Include="Options\R\Tools\BrowserForFolderUIEditor.cs" />
-    <Compile Include="Options\R\Tools\LogVerbosityTypeConverter.cs" />
     <Compile Include="Options\R\Tools\EncodingTypeConverter.cs" />
     <Compile Include="History\Commands\ToggleMultilineHistorySelectionCommand.cs" />
     <Compile Include="History\HistoryWindowPane.cs" />
@@ -229,7 +228,6 @@
     <Compile Include="ProjectSystem\Commands\SendToRemoteCommand.cs" />
     <Compile Include="ProjectSystem\Editors\SettingPropertyDescriptor.cs" />
     <Compile Include="ProjectSystem\Editors\SettingsTypeDescriptor.cs" />
-    <Compile Include="RClient\FileDownloader.cs" />
     <Compile Include="Repl\Commands\History\NextHistoryReplCommand.cs" />
     <Compile Include="Repl\Commands\History\PrevHistoryReplCommand.cs" />
     <Compile Include="Repl\Commands\ReplCommandBase.cs" />
@@ -317,7 +315,6 @@
     <Compile Include="ProjectSystem\PropertyPages\PropertyPageProvider.cs" />
     <Compile Include="ProjectSystem\RDebugLaunchProvider.cs" />
     <Compile Include="ProjectSystem\WorkspaceServices.cs" />
-    <Compile Include="RClient\MicrosoftRClientInstaller.cs" />
     <Compile Include="Repl\Commands\Directory\SetDirectoryToProjectCommand.cs" />
     <Compile Include="Repl\Commands\Directory\SetDirectoryToSourceCommand.cs" />
     <Compile Include="Repl\Commands\Directory\WorkingDirectoryCommand.cs" />
@@ -496,15 +493,6 @@
     <Compile Include="TaskList\VsTaskItem.cs" />
     <Compile Include="TaskList\VsTaskList.cs" />
     <Compile Include="TaskList\VsTaskListProvider.cs" />
-    <Compile Include="Telemetry\Data\FolderUtility.cs" />
-    <Compile Include="Telemetry\Data\RPackageType.cs" />
-    <Compile Include="Telemetry\Data\ToolWindowData.cs" />
-    <Compile Include="Telemetry\Definitions\IRtvsTelemetry.cs" />
-    <Compile Include="Telemetry\StringTelemetryRecorder.cs" />
-    <Compile Include="Telemetry\RtvsTelemetry.cs" />
-    <Compile Include="Telemetry\VsTelemetryRecorder.cs" />
-    <Compile Include="Telemetry\VsTelemetryService.cs" />
-    <Compile Include="Telemetry\Windows\ToolWindowTracker.cs" />
     <Compile Include="Utilities\CollectionUtilities.cs" />
     <Compile Include="Repl\IActiveRInteractiveWindowTracker.cs" />
     <Compile Include="Utilities\LongOperationNotification.cs" />
@@ -1647,7 +1635,7 @@
         <VSIXSubPath>Help\Themes</VSIXSubPath>
       </VSIXSourceItem>
       <VSIXSourceItem Include="$(OutputPath)\Markdown\PreviewTemplate.html">
-      <VSIXSubPath>Markdown</VSIXSubPath>
+        <VSIXSubPath>Markdown</VSIXSubPath>
       </VSIXSourceItem>
       <VSIXSourceItem Include="$(OutputPath)\Dockerfile">
         <VSIXSubPath>DockerTemplate</VSIXSubPath>

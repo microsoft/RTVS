@@ -4,8 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
-using System.IO;
-using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Threading;
@@ -44,7 +42,6 @@ using Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages;
 using Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings;
 using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Package.Shell;
-using Microsoft.VisualStudio.R.Package.Telemetry;
 using Microsoft.VisualStudio.R.Package.ToolWindows;
 using Microsoft.VisualStudio.R.Package.Utilities;
 using Microsoft.VisualStudio.Shell;
@@ -144,13 +141,11 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             LoadEditorSettings();
             BuildFunctionIndex();
             AddConnectionStatusBar();
-            RtvsTelemetry.Initialize(_packageIndex, Services);
 
             AdviseExportedWindowFrameEvents<ActiveWpfTextViewTracker>();
             AdviseExportedWindowFrameEvents<VsActiveRInteractiveWindowTracker>();
             AdviseExportedDebuggerEvents<VsDebuggerModeTracker>();
 
-            System.Threading.Tasks.Task.Run(() => RtvsTelemetry.Current.ReportConfiguration()).DoNotWait();
             ExpansionsCache.Load(Services);
         }
 
@@ -167,7 +162,6 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 CsvAppFileIO.Close(_fs);
             }
 
-            RtvsTelemetry.Current?.Dispose();
             VsAppShell.Terminate();
 
             base.Dispose(disposing);

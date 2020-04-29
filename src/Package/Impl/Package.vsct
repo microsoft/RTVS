@@ -248,14 +248,6 @@
         </Strings>
       </Menu>
 
-      <!-- Feedback flyout -->
-      <Menu guid="guidRToolsCmdSet" id="feedbackSubMenu" type="Menu" priority="0x300">
-        <Parent guid="guidRToolsCmdSet" id="docsGroup"/>
-        <Strings>
-          <ButtonText>&amp;Feedback</ButtonText>
-        </Strings>
-      </Menu>
-
       <!-- Windows flyout -->
       <Menu guid="guidRToolsCmdSet" id="windowsSubMenu" type="Menu" priority="0x1000">
         <Parent guid="guidRToolsCmdSet" id="mainMenuGroup"/>

@@ -12,8 +12,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
-using Microsoft.Common.Core.Services;
-using Microsoft.Common.Core.Telemetry;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Containers;
 using Newtonsoft.Json.Linq;
@@ -29,7 +27,6 @@ namespace Microsoft.R.Components.Containers.Implementation {
         private const string TelemetryEvent_Delete = "End creating from file";
 
         private readonly IContainerService _containerService;
-        private readonly ITelemetryService _telemetry;
         private readonly CountdownDisposable _containersChangedCountdown;
         private ImmutableArray<IContainer> _containers;
         private ImmutableArray<IContainer> _runningContainers;
@@ -54,7 +51,6 @@ namespace Microsoft.R.Components.Containers.Implementation {
 
         public ContainerManager(IRInteractiveWorkflow interactiveWorkflow) {
             _containerService = interactiveWorkflow.Services.GetService<IContainerService>();
-            _telemetry = interactiveWorkflow.Services.Telemetry();
             _updateContainersCts = new CancellationTokenSource();
             _containers = ImmutableArray<IContainer>.Empty;
             _runningContainers = ImmutableArray<IContainer>.Empty;
@@ -107,7 +103,6 @@ namespace Microsoft.R.Components.Containers.Implementation {
 
         public async Task DeleteAsync(string containerId, CancellationToken cancellationToken) {
             try {
-                _telemetry.ReportEvent(TelemetryArea.Containers, TelemetryEvent_Delete);
                 await _containerService.DeleteContainerAsync(containerId, cancellationToken);
             } finally {
                 await UpdateContainersOnceAsync(cancellationToken);
@@ -119,7 +114,6 @@ namespace Microsoft.R.Components.Containers.Implementation {
                 version = LatestVersion;
             }
 
-            _telemetry.ReportEvent(TelemetryArea.Containers, TelemetryEvent_BeginCreatingPredefined, version);
             var basePath = Path.GetDirectoryName(GetType().GetTypeInfo().Assembly.GetAssemblyPath());
             var dockerfilePath = Path.Combine(basePath, "DockerTemplate\\Dockerfile");
 
@@ -130,15 +124,12 @@ namespace Microsoft.R.Components.Containers.Implementation {
                 ["PASSWORD"] = password
             }, name, port);
             var container = CreateLocalDockerFromContentAsync(parameters, cancellationToken);
-            _telemetry.ReportEvent(TelemetryArea.Containers, TelemetryEvent_EndCreatingPredefined, version);
 
             return container;
         }
 
         public Task<IContainer> CreateLocalDockerFromFileAsync(string name, string filePath, int port, CancellationToken cancellationToken = default(CancellationToken)) {
-            _telemetry.ReportEvent(TelemetryArea.Containers, TelemetryEvent_BeginCreatingFromFile);
             var container = CreateLocalDockerFromContentAsync(new BuildImageParameters(filePath, Guid.NewGuid().ToString(), LatestVersion, name, port), cancellationToken);
-            _telemetry.ReportEvent(TelemetryArea.Containers, TelemetryEvent_EndCreatingFromFile);
             return container;
         }
 

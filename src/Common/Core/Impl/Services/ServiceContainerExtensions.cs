@@ -13,7 +13,6 @@ using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Security;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Tasks;
-using Microsoft.Common.Core.Telemetry;
 using Microsoft.Common.Core.Threading;
 using Microsoft.Common.Core.UI;
 using Microsoft.Common.Core.UI.Commands;
@@ -25,7 +24,6 @@ namespace Microsoft.Common.Core.Services {
         public static IActionLog Log(this IServiceContainer sc) => sc.GetService<IActionLog>();
         public static IFileSystem FileSystem(this IServiceContainer sc) => sc.GetService<IFileSystem>();
         public static IProcessServices Process(this IServiceContainer sc) => sc.GetService<IProcessServices>();
-        public static ITelemetryService Telemetry(this IServiceContainer sc) => sc.GetService<ITelemetryService>();
         public static ISecurityService Security(this IServiceContainer sc) => sc.GetService<ISecurityService>();
         public static ITaskService Tasks(this IServiceContainer sc) => sc.GetService<ITaskService>();
         public static IUIService UI(this IServiceContainer sc) => sc.GetService<IUIService>();

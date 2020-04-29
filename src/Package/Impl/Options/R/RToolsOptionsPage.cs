@@ -14,7 +14,6 @@ using Microsoft.R.Components.Settings;
 using Microsoft.VisualStudio.R.Package.Options.Attributes;
 using Microsoft.VisualStudio.R.Package.Options.R.Tools;
 using Microsoft.VisualStudio.R.Package.Shell;
-using Microsoft.VisualStudio.R.Package.Telemetry;
 using Microsoft.VisualStudio.Shell;
 using static System.FormattableString;
 
@@ -190,16 +189,6 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             set => _holder.SetValue(value);
         }
 
-        [LocCategory(nameof(Resources.Settings_LogCategory))]
-        [CustomLocDisplayName(nameof(Resources.Settings_LogLevel))]
-        [LocDescription(nameof(Resources.Settings_LogLevel_Description))]
-        [TypeConverter(typeof(LogVerbosityTypeConverter))]
-        [DefaultValue(LogVerbosity.Normal)]
-        public LogVerbosity LogVerbosity {
-            get => _holder.GetValue(LogVerbosity.Normal);
-            set => _holder.SetValue(value);
-        }
-
         [LocCategory(nameof(Resources.Settings_GridViewCategory))]
         [CustomLocDisplayName(nameof(Resources.Settings_GridView_DynamicEvaluation))]
         [LocDescription(nameof(Resources.Settings_GridView_DynamicEvaluation_Description))]
@@ -216,7 +205,6 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         protected override void OnApply(PageApplyEventArgs e) {
             if (e.ApplyBehavior == ApplyKind.Apply) {
                 _holder.Apply();
-                RtvsTelemetry.Current.ReportSettings();
             }
             base.OnApply(e);
         }

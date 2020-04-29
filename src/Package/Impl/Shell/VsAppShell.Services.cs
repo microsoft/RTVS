@@ -3,32 +3,30 @@
 
 using System.IO;
 using Microsoft.Common.Core.Imaging;
+using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Security;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Tasks;
-using Microsoft.Common.Core.Telemetry;
 using Microsoft.Common.Core.Threading;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.Markdown.Editor.Settings;
 using Microsoft.R.Common.Core.Output;
-using Microsoft.R.Containers;
 using Microsoft.R.Components;
 using Microsoft.R.Components.Security;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.StatusBar;
+using Microsoft.R.Containers;
 using Microsoft.R.Editor;
 using Microsoft.R.Editor.Settings;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Platform;
-using Microsoft.R.Platform.Interpreters;
+using Microsoft.R.Platform.IO;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.R.Package.Imaging;
 using Microsoft.VisualStudio.R.Package.Options.R;
-using Microsoft.VisualStudio.R.Package.RClient;
 using Microsoft.VisualStudio.R.Package.StatusBar;
-using Microsoft.VisualStudio.R.Package.Telemetry;
 using Microsoft.VisualStudio.R.Packages.R;
 using VsPackage = Microsoft.VisualStudio.Shell.Package;
 
@@ -43,14 +41,12 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             _services
                 .AddService<IActionLog>(s => new Logger(VsApplication.Name, Path.GetTempPath(), s))
                 .AddService<IMainThread, VsMainThread>()
-                .AddService<IMicrosoftRClientInstaller, MicrosoftRClientInstaller>()
                 .AddService<IOutputService, VsOutputService>()
                 .AddService<ISettingsStorage, VsSettingsStorage>()
                 .AddService<IRSettings, RSettingsImplementation>()
                 .AddService<ITaskService, VsTaskService>()
-                .AddService<ITelemetryService, VsTelemetryService>()
-                .AddService<ISecurityService, WindowsSecurityService>();
-
+                .AddService<ISecurityService, WindowsSecurityService>()
+                .AddService<IFileSystem, WindowsFileSystem>();
         }
 
         private void ConfigurePackageServices() {

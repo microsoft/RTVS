@@ -53,6 +53,9 @@
     <None Update="rtvs\man\fetch_file.Rd">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="rtvs\Meta\package.rds">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="rtvs\NAMESPACE">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -104,6 +107,9 @@
   <Import Project="$(SourceDirectory)R.Build.Loc.targets" />
   <ItemGroup>
     <RtvsPackageFiles Include="rtvs\**\*" />
+  </ItemGroup>
+  <ItemGroup>
+    <RtvsPackageFiles Remove="rtvs\Meta\package.rds" />
   </ItemGroup>
   <Target Name="AfterBuild">
     <Copy SourceFiles="@(RtvsPackageFiles)" DestinationFolder="$(BinDirectory)\$(Configuration)\rtvs\%(RecursiveDir)" />

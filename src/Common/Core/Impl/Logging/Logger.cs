@@ -11,7 +11,6 @@ namespace Microsoft.Common.Core.Logging {
     /// </summary>
     public sealed class Logger : IActionLog, IDisposable {
         private readonly Lazy<IActionLogWriter[]> _logs;
-        private readonly ILoggingPermissions _permissions;
         private readonly string _name;
         private readonly IActionLogWriter _writer;
 
@@ -25,15 +24,13 @@ namespace Microsoft.Common.Core.Logging {
             }
         }
 
-        public Logger(IActionLogWriter defaultWriter, ILoggingPermissions permissions) {
+        public Logger(IActionLogWriter defaultWriter) {
             _writer = defaultWriter;
-            _permissions = permissions;
             _logs = Lazy.Create(CreateLogs);
         }
 
         public Logger(string name, string folder, IServiceContainer services) {
             _name = name;
-            _permissions = services.GetService<ILoggingPermissions>();
             _logs = Lazy.Create(CreateLogs);
             Folder = folder;
         }
@@ -42,23 +39,20 @@ namespace Microsoft.Common.Core.Logging {
             var logs = new IActionLogWriter[Enum.GetValues(typeof(LogVerbosity)).Length];
             logs[(int)LogVerbosity.None] = NullLogWriter.Instance;
 
-            IActionLogWriter mainWriter = NullLogWriter.Instance;
-            if (_permissions.CurrentVerbosity >= LogVerbosity.Minimal) {
-                mainWriter = _writer ?? FileLogWriter.InFolder(Folder, _name);
-            }
+           var mainWriter = _writer ?? FileLogWriter.InFolder(Folder, _name);
 
             // Unfortunately, creation of event sources in OS logs requires local admin rights.
             // http://www.christiano.ch/wordpress/2009/12/02/iis7-web-application-writing-to-event-log-generates-security-exception/
             // So we can't use OS event logs as in Dev15 there is no MSI which could elevate..
             // _maxLogLevel >= LogLevel.Minimal ? (_writer ?? new ApplicationLogWriter(_name)) : NullLogWriter.Instance;
             logs[(int)LogVerbosity.Minimal] = mainWriter;
-            logs[(int)LogVerbosity.Normal] = _permissions.CurrentVerbosity >= LogVerbosity.Normal ? mainWriter : NullLogWriter.Instance;
+            logs[(int)LogVerbosity.Normal] = mainWriter;
 
-            if (_permissions.CurrentVerbosity == LogVerbosity.Traffic) {
-                logs[(int)LogVerbosity.Traffic] = _writer ?? FileLogWriter.InFolder(Folder, _name + ".traffic");
-            } else {
+            //if (_permissions.CurrentVerbosity == LogVerbosity.Traffic) {
+            //    logs[(int)LogVerbosity.Traffic] = _writer ?? FileLogWriter.InFolder(Folder, _name + ".traffic");
+            //} else {
                 logs[(int)LogVerbosity.Traffic] = NullLogWriter.Instance;
-            }
+            // }
 
             return logs;
         }
@@ -79,7 +73,7 @@ namespace Microsoft.Common.Core.Logging {
             }
         }
 
-        public LogVerbosity LogVerbosity => _permissions.CurrentVerbosity;
+        public LogVerbosity LogVerbosity => LogVerbosity.Normal;
         #endregion
     }
 }

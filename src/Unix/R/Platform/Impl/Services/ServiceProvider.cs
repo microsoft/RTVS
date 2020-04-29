@@ -8,7 +8,6 @@ using Microsoft.Common.Core.Services;
 using Microsoft.R.Platform.Interpreters.Linux;
 using Microsoft.R.Platform.Interpreters.Mac;
 using Microsoft.R.Platform.IO;
-using Microsoft.R.Platform.Logging;
 
 namespace Microsoft.R.Platform {
     /// <summary>
@@ -19,8 +18,7 @@ namespace Microsoft.R.Platform {
     public static class ServiceProvider {
         public static void ProvideServices(IServiceManager services) {
             services
-                .AddService(new UnixFileSystem())
-                .AddService(new UnixLoggingPermissions());
+                .AddService(new UnixFileSystem());
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX)) {
                 services

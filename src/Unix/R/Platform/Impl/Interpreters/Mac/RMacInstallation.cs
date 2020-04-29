@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.IO;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
-using Microsoft.Common.Core.Telemetry;
 using Microsoft.R.Platform.IO;
 
 namespace Microsoft.R.Platform.Interpreters.Mac {

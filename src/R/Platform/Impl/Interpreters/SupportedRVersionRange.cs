@@ -10,7 +10,7 @@ namespace Microsoft.R.Platform.Interpreters {
         public int MaxMajorVersion { get; }
         public int MaxMinorVersion { get; }
 
-        public SupportedRVersionRange() : this(3, 2, 3, 9) { }
+        public SupportedRVersionRange() : this(3, 2, 4, 9) { }
 
         public SupportedRVersionRange(int minVersionMajorPart, int minVersionMinorPart, int maxVersionMajorPart, int maxVersionMinorPart) {
             MinMajorVersion = minVersionMajorPart;

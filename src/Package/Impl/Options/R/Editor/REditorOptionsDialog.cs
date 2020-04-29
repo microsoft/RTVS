@@ -7,7 +7,6 @@ using Microsoft.Common.Core.Shell;
 using Microsoft.R.Editor;
 using Microsoft.VisualStudio.R.Package.Options.Attributes;
 using Microsoft.VisualStudio.R.Package.Shell;
-using Microsoft.VisualStudio.R.Package.Telemetry;
 using Microsoft.VisualStudio.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.Options.R.Editor {
@@ -204,14 +203,5 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Editor {
             _settings.ResetSettings();
             base.ResetSettings();
         }
-
-        protected override void OnApply(PageApplyEventArgs e) {
-            if (e.ApplyBehavior == ApplyKind.Apply) {
-                RtvsTelemetry.Current.ReportSettings();
-            }
-            base.OnApply(e);
-        }
-
-        protected override void OnClosed(EventArgs e) => base.OnClosed(e);
     }
 }

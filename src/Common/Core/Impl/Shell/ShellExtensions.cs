@@ -8,7 +8,6 @@ using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Security;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Tasks;
-using Microsoft.Common.Core.Telemetry;
 using Microsoft.Common.Core.Threading;
 using Microsoft.Common.Core.UI;
 using Microsoft.Common.Core.UI.Commands;
@@ -19,7 +18,6 @@ namespace Microsoft.Common.Core.Shell {
         public static IActionLog Log(this ICoreShell shell) => shell.Services.Log();
         public static IFileSystem FileSystem(this ICoreShell shell) => shell.Services.FileSystem();
         public static IProcessServices Process(this ICoreShell shell) => shell.Services.Process();
-        public static ITelemetryService Telemetry(this ICoreShell shell) => shell.Services.Telemetry();
         public static ISecurityService Security(this ICoreShell shell) => shell.Services.Security();
         public static ITaskService Tasks(this ICoreShell shell) => shell.Services.Tasks();
         public static IUIService UI(this ICoreShell shell) => shell.Services.UI();

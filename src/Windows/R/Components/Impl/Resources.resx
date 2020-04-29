@@ -658,7 +658,7 @@ All data will be lost. Do you wish to proceed?</value>
     <value>The connection string appears to be in incorrect format. Would you like to re-create it?</value>
   </data>
   <data name="NoLocalR" xml:space="preserve">
-    <value>Visual Studio is unable to find local R installation. Would you like to install Microsoft R Client (recommended)?{0}Click Yes to install latest Microsoft R Client. {1}Click No if you are planning to set up connection to a remote machine.</value>
+    <value>Visual Studio is unable to find local R installation. You can still set up connection to a remote machine.</value>
   </data>
   <data name="ConnectionManager_DeleteLocalDisabledTooltip" xml:space="preserve">
     <value>Entry for the automatically detected local R cannot be deleted. It will be removed when this R version is uninstalled.</value>

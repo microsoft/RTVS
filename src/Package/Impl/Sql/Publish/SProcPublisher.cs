@@ -6,18 +6,14 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Windows.Threading;
-using Microsoft.Common.Core;
 using Microsoft.Common.Core.Diagnostics;
-using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Services;
 using Microsoft.Common.Core.Shell;
-using Microsoft.Common.Core.Telemetry;
 using Microsoft.R.Components.Sql;
 using Microsoft.R.Components.Sql.Publish;
 using Microsoft.VisualStudio.R.Package.Logging;
 using Microsoft.VisualStudio.R.Package.ProjectSystem;
-using Microsoft.VisualStudio.R.Package.Telemetry;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
@@ -66,8 +62,6 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
             if (project != null) {
                 var dacpacPath = Path.ChangeExtension(project.FullName, DacPacExtension);
                 CreateDacPac(settings, sprocFiles, dacpacPath);
-                RtvsTelemetry.Current?.TelemetryService.ReportEvent(TelemetryArea.SQL,
-                    SqlTelemetryEvents.SqlDacPacPublish);
             }
         }
 
@@ -88,7 +82,6 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
                     string.Format(CultureInfo.InvariantCulture, Resources.SqlPublish_PublishDatabaseSuccess, connection) +
                     Environment.NewLine;
                 _outputWindow.Write(MessageCategory.General, message);
-                RtvsTelemetry.Current?.TelemetryService.ReportEvent(TelemetryArea.SQL, SqlTelemetryEvents.SqlDatabasePublish);
             }
         }
 
@@ -102,7 +95,6 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
             var generator = new SProcProjectFilesGenerator(_pss, _services.FileSystem());
             targetProject = targetProject ?? _pss.GetActiveProject();
             generator.Generate(settings, sprocFiles, targetProject);
-            RtvsTelemetry.Current?.TelemetryService.ReportEvent(TelemetryArea.SQL, SqlTelemetryEvents.SqlProjectPublish);
         }
 
         private void CreateDacPac(SqlSProcPublishSettings settings, IEnumerable<string> sprocFiles, string dacpacPath) {

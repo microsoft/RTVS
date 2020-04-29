@@ -55,25 +55,27 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
             _textLines.SetLanguageServiceID(ref _languageServiceGuid);
             var adapterService = _services.GetService<IVsEditorAdaptersFactoryService>();
             var diskBuffer = adapterService.GetDocumentBuffer(_textLines);
-            Debug.Assert(diskBuffer != null);
+            // Debug.Assert(diskBuffer != null);
+            if (diskBuffer != null) {
+                try {
+                    var editorInstance = diskBuffer.GetService<IEditorViewModel>();
+                    if (editorInstance == null) {
+                        var locator = _services.GetService<IContentTypeServiceLocator>();
+                        var instancefactory = locator.GetService<IEditorViewModelFactory>(diskBuffer.ContentType.TypeName);
 
-            try {
-                var editorInstance = diskBuffer.GetService<IEditorViewModel>();
-                if (editorInstance == null) {
-                    var locator = _services.GetService<IContentTypeServiceLocator>();
-                    var instancefactory = locator.GetService<IEditorViewModelFactory>(diskBuffer.ContentType.TypeName);
+                        Debug.Assert(instancefactory != null, "No editor factory found for the provided text buffer");
+                        editorInstance = instancefactory.CreateEditorViewModel(diskBuffer);
+                    }
 
-                    Debug.Assert(instancefactory != null, "No editor factory found for the provided text buffer");
-                    editorInstance = instancefactory.CreateEditorViewModel(diskBuffer);
+                    Debug.Assert(editorInstance != null);
+                    adapterService.SetDataBuffer(_textLines, editorInstance.ViewBuffer.As<ITextBuffer>());
                 }
-
-                Debug.Assert(editorInstance != null);
-                adapterService.SetDataBuffer(_textLines, editorInstance.ViewBuffer.As<ITextBuffer>());
-            } finally {
-                cp.Unadvise(cookie);
-                cookie = 0;
-                _textLines = null;
-                _trackers.Remove(this);
+                finally {
+                    cp.Unadvise(cookie);
+                    cookie = 0;
+                    _textLines = null;
+                    _trackers.Remove(this);
+                }
             }
             return VSConstants.S_OK;
         }

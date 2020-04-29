@@ -167,18 +167,11 @@ namespace Microsoft.R.Host.Client {
         public Task BeforePackagesInstalledAsync(CancellationToken cancellationToken) => Task.CompletedTask;
         public Task AfterPackagesInstalledAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 
-        class MaxLoggingPermissions : ILoggingPermissions {
-            public LogVerbosity CurrentVerbosity { get; set; } = LogVerbosity.Traffic;
-            public bool IsFeedbackPermitted => true;
-            public LogVerbosity MaxVerbosity => LogVerbosity.Traffic;
-        }
-
         class CoreShell : ICoreShell, IDisposable {
             private readonly IServiceManager _serviceManager;
 
             public CoreShell(string programName) {
                 _serviceManager = new ServiceManager()
-                    .AddService(new MaxLoggingPermissions())
                     .AddService(new Logger(programName, Path.GetTempPath(), _serviceManager));
             }
 

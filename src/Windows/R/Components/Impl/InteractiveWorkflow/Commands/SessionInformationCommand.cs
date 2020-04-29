@@ -6,8 +6,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
-using Microsoft.Common.Core.Shell;
-using Microsoft.Common.Core.Telemetry;
 using Microsoft.Common.Core.UI.Commands;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Host;
@@ -124,20 +122,6 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
             }
 
             _console.WriteError(sb.ToString());
-            if (reportTelemetry) {
-                var telemetry = _interactiveWorkflow.Services.GetService<ITelemetryService>();
-                foreach (var name in aboutHost.Interpreters) {
-                    telemetry.ReportEvent(TelemetryArea.Configuration, "Remote Interpteter", name);
-                    telemetry.ReportEvent(TelemetryArea.Configuration, "Remote OS", aboutHost.Version);
-                    telemetry.ReportEvent(TelemetryArea.Configuration, "Remote CPUs", aboutHost.ProcessorCount);
-                    telemetry.ReportEvent(TelemetryArea.Configuration, "Remote RAM", aboutHost.TotalPhysicalMemory);
-
-                    foreach(var cardInfo in aboutHost.VideoCards) {
-                        telemetry.ReportEvent(TelemetryArea.Configuration, "Remote Video Card", cardInfo.VideoCardName);
-                        telemetry.ReportEvent(TelemetryArea.Configuration, "Remote GPU", cardInfo.VideoProcessor);
-                    }
-                }
-            }
         }
     }
 }

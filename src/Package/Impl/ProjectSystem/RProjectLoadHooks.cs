@@ -176,7 +176,9 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
 
             _unconfiguredProject.ProjectRenamedOnWriter -= ProjectRenamedOnWriterAsync;
             _unconfiguredProject.ProjectUnloading -= ProjectUnloadingAsync;
-            _workflow.RSessions.BeforeDisposed -= BeforeRSessionsDisposed;
+            if (_workflow?.RSessions != null) {
+                _workflow.RSessions.BeforeDisposed -= BeforeRSessionsDisposed;
+            }
 
             _fileWatcher.Dispose();
 

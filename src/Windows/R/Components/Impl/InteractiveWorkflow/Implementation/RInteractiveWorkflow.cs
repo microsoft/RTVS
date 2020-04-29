@@ -133,16 +133,11 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                         var message = Resources.NoLocalR.FormatInvariant(Environment.NewLine + Environment.NewLine,
                             Environment.NewLine);
                         var ui = Services.UI();
-                        showConnectionsWindow = ui.ShowMessage(message, MessageButtons.YesNo) == MessageButtons.No;
+                        ui.ShowMessage(message, MessageButtons.OK);
                     }
 
-                    if (!showConnectionsWindow) {
-                        var installer = Services.GetService<IMicrosoftRClientInstaller>();
-                        installer.LaunchRClientSetup(Services);
-                    } else {
-                        var toolWindows = Services.GetService<IRInteractiveWorkflowToolWindowService>();
-                        toolWindows.Connections().Show(focus: false, immediate: false);
-                    }
+                    var toolWindows = Services.GetService<IRInteractiveWorkflowToolWindowService>();
+                    toolWindows.Connections().Show(focus: false, immediate: false);
                 }
             }
 
